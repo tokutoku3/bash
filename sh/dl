@@ -1,0 +1,43 @@
+#!/bin/bash
+# function check() {
+# 	result=$(git status > /dev/null)
+# 	# git status > /dev/null 2>&1 | grep 'fatal:'
+# 	grep -v "$result"
+# 	echo "$?"
+# 	if [[ "$?" -eq 0 ]]; then
+# 		return 0
+# 	fi
+# 	return 1
+# }
+# function error() {
+# 	echo -e "\033[0;31mThis folder is not a git repogitory.\033[0;37m"
+# 	exit 1;
+# }
+# check || error # Check git repogitory
+
+diff=""
+name=""
+if [ $# -eq 1 ]; then
+	if expr "$1" : '.*[^0-9].*' > /dev/null ; then
+      	diff=" HEAD ${1}"
+		name="HEAD ~ ${1}"
+    else
+        diff=" HEAD HEAD~${1}"
+		name="HEAD ~ HEAD~${1} "
+    fi
+elif [ $# -eq 2 ]; then
+    diff="${1} ${2}"
+	name="${1} ~ ${2}"
+fi
+
+echo -e "\033[0;37mNot staged files :\033[0;31m"
+git diff --name-only
+echo -e "\033[0;37m"
+echo -e "Diff files \033[0;33m${name}\033[0;37m:"
+if [ "$diff" != "" ]; then
+	list=$(git diff --name-only $diff)
+	echo -e "\033[0;32m$list"
+else
+	echo "Not exists."
+fi
+echo -e "\033[0;37m"
